@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>For You — An Apology, From Your Dumb Best Friend</title>
+<meta name="description" content="A heartfelt apology from someone who is a little dumb but loves you a lot." />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,300;1,9..144,600&family=Inter:wght@300;400;500;600&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+
+<!-- GSAP + ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+  :root{
+    --bg:#0e0b14;
+    --bg-soft:#16101f;
+    --ink:#f5efe6;
+    --ink-dim:#b9aec6;
+    --gold:#e8c07a;
+    --rose:#ff7a9c;
+    --violet:#a78bfa;
+    --serif:"Fraunces", serif;
+    --sans:"Inter", sans-serif;
+    --hand:"Caveat", cursive;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--rose);color:#1a0510;}
+
+  /* ---------- Progress bar ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:3px;width:0%;
+    background:linear-gradient(90deg,var(--gold),var(--rose),var(--violet));
+    z-index:999;box-shadow:0 0 12px rgba(255,122,156,.6);
+  }
+
+  /* ---------- Custom cursor glow ---------- */
+  #glow{
+    position:fixed;width:420px;height:420px;border-radius:50%;
+    pointer-events:none;z-index:0;
+    background:radial-gradient(circle,rgba(167,139,250,.10),transparent 65%);
+    transform:translate(-50%,-50%);
+    transition:opacity .4s;
+  }
+
+  /* ---------- Nav dots ---------- */
+  #dots{
+    position:fixed;right:22px;top:50%;transform:translateY(-50%);
+    display:flex;flex-direction:column;gap:14px;z-index:100;
+  }
+  #dots a{
+    width:10px;height:10px;border-radius:50%;
+    background:rgba(245,239,230,.22);
+    transition:all .35s cubic-bezier(.4,0,.2,1);
+    position:relative;display:block;
+  }
+  #dots a.active{
+    background:var(--gold);transform:scale(1.5);
+    box-shadow:0 0 14px rgba(232,192,122,.8);
+  }
+  #dots a:hover::before{
+    content:attr(data-label);
+    position:absolute;right:22px;top:50%;transform:translateY(-50%);
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-dim);white-space:nowrap;
+    background:rgba(14,11,20,.8);padding:4px 10px;border-radius:20px;
+    backdrop-filter:blur(6px);
+  }
+
+  /* ---------- Sections ---------- */
+  section{
+    min-height:100vh;position:relative;z-index:1;
+    display:flex;align-items:center;justify-content:center;
+    padding:90px 6vw;
+  }
+  .inner{max-width:980px;width:100%;}
+
+  .kicker{
+    font-size:clamp(9px,1.4vw,12px);letter-spacing:.42em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:26px;display:flex;align-items:center;gap:14px;
+    white-space:nowrap;
+  }
+  .kicker::before{content:"";width:44px;height:1px;background:var(--gold);display:inline-block;}
+
+  h1,h2{font-family:var(--serif);font-weight:500;line-height:1.08;}
+  h1{font-size:clamp(46px,8.5vw,110px);}
+  h2{font-size:clamp(34px,5.5vw,64px);margin-bottom:28px;}
+  h2 em{font-style:italic;color:var(--rose);}
+  p.lead{font-size:clamp(16px,1.6vw,20px);line-height:1.85;color:var(--ink-dim);max-width:640px;}
+
+  .reveal{opacity:0;transform:translateY(50px);}
+
+  /* ---------- HERO ---------- */
+  #hero{overflow:hidden;}
+  .hero-grad{
+    position:absolute;inset:0;z-index:-1;
+    background:
+      radial-gradient(ellipse 60% 45% at 20% 15%,rgba(255,122,156,.16),transparent 60%),
+      radial-gradient(ellipse 55% 50% at 85% 80%,rgba(167,139,250,.16),transparent 60%),
+      radial-gradient(ellipse 40% 35% at 60% 40%,rgba(232,192,122,.08),transparent 60%);
+  }
+  .stars{position:absolute;inset:0;z-index:-1;}
+  .star{
+    position:absolute;border-radius:50%;background:var(--ink);
+    opacity:.5;animation:twinkle var(--d,3s) ease-in-out infinite;
+  }
+  @keyframes twinkle{0%,100%{opacity:.15;transform:scale(.8);}50%{opacity:.75;transform:scale(1.15);}}
+  .hero-title em{
+    background:linear-gradient(100deg,var(--gold),var(--rose),var(--violet));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    font-style:italic;
+  }
+  .scroll-hint{
+    position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+    color:var(--ink-dim);font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+  }
+  .mouse{width:22px;height:36px;border:1.5px solid var(--ink-dim);border-radius:12px;position:relative;}
+  .mouse::after{
+    content:"";position:absolute;left:50%;top:7px;width:3px;height:7px;margin-left:-1.5px;
+    background:var(--gold);border-radius:3px;animation:wheel 1.8s ease-in-out infinite;
+  }
+  @keyframes wheel{0%{opacity:1;transform:translateY(0);}70%{opacity:0;transform:translateY(12px);}100%{opacity:0;}}
+
+  /* ---------- APOLOGY (letter) ---------- */
+  #apology{background:linear-gradient(180deg,var(--bg) 0%,var(--bg-soft) 50%,var(--bg) 100%);}
+  .letter{
+    background:rgba(245,239,230,.035);
+    border:1px solid rgba(232,192,122,.18);
+    border-radius:22px;padding:clamp(30px,5vw,60px);
+    backdrop-filter:blur(8px);
+    box-shadow:0 30px 80px rgba(0,0,0,.45);
+    position:relative;
+  }
+  .letter::before{
+    content:"✦";position:absolute;top:-16px;left:40px;
+    font-size:22px;color:var(--gold);
+    background:var(--bg);padding:4px 10px;border-radius:12px;
+  }
+  .letter p{
+    font-size:clamp(16px,1.7vw,19px);line-height:2;color:var(--ink-dim);margin-bottom:1.4em;
+  }
+  .letter p:last-child{margin-bottom:0;}
+  .letter .sig{
+    font-family:var(--hand);font-size:clamp(26px,3.4vw,38px);color:var(--gold);
+    transform:rotate(-3deg);display:inline-block;margin-top:8px;
+  }
+
+  /* ---------- TRUST ---------- */
+  .trust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-top:44px;}
+  @media(min-width:720px){.trust-grid{grid-template-columns:repeat(2,1fr);}}
+  .trust-card{
+    background:rgba(245,239,230,.03);
+    border:1px solid rgba(245,239,230,.09);
+    border-radius:18px;padding:34px 28px;
+    transition:transform .5s cubic-bezier(.22,1,.36,1),border-color .5s,background .5s;
+    position:relative;overflow:hidden;
+  }
+  .trust-card::after{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%),rgba(232,192,122,.10),transparent 60%);
+    opacity:0;transition:opacity .4s;pointer-events:none;
+  }
+  .trust-card:hover{transform:translateY(-10px);border-color:rgba(232,192,122,.4);background:rgba(245,239,230,.05);}
+  .trust-card:hover::after{opacity:1;}
+  .trust-card .icon{font-size:34px;margin-bottom:18px;display:block;}
+  .trust-card h3{font-family:var(--serif);font-size:22px;font-weight:600;margin-bottom:12px;color:var(--ink);}
+  .trust-card p{font-size:15px;line-height:1.75;color:var(--ink-dim);}
+
+  /* ---------- HUMOR ---------- */
+  #humor{background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(255,122,156,.07),transparent 70%);}
+  .chips{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px;}
+  .chip{
+    font-size:clamp(15px,1.5vw,18px);padding:14px 26px;border-radius:40px;
+    border:1px solid rgba(167,139,250,.35);color:var(--ink-dim);
+    transition:all .4s cubic-bezier(.22,1,.36,1);cursor:default;
+  }
+  .chip:hover{
+    transform:scale(1.08) rotate(-2deg);border-color:var(--rose);color:var(--ink);
+    background:rgba(255,122,156,.08);box-shadow:0 10px 30px rgba(255,122,156,.15);
+  }
+  .iq-meter{margin-top:60px;} @media(max-width:640px){.iq-meter{margin-top:44px;}.chips{gap:12px;margin-top:30px;}.chip{padding:11px 20px;}}
+  .iq-meter .label{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:12px;}
+  .bar{height:14px;border-radius:10px;background:rgba(245,239,230,.08);overflow:hidden;position:relative;}
+  .fill{
+    height:100%;width:0%;border-radius:10px;
+    background:linear-gradient(90deg,var(--violet),var(--rose),var(--gold));
+  }
+  .fill-note{font-family:var(--hand);font-size:24px;color:var(--gold);margin-top:14px;transform:rotate(-1.5deg);display:inline-block;}
+
+  /* ---------- TIMELINE / PROMISES ---------- */
+  .timeline{margin-top:50px;position:relative;padding-left:34px;}
+  .timeline::before{
+    content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;
+    background:linear-gradient(180deg,var(--gold),var(--rose),var(--violet));
+    border-radius:2px;
+  }
+  .t-item{position:relative;margin-bottom:44px;}
+  .t-item::before{
+    content:"";position:absolute;left:-32px;top:6px;width:14px;height:14px;border-radius:50%;
+    background:var(--bg);border:3px solid var(--gold);
+    box-shadow:0 0 16px rgba(232,192,122,.6);
+  }
+  .t-item h3{font-family:var(--serif);font-size:clamp(20px,2.2vw,26px);font-weight:600;margin-bottom:10px;}
+  .t-item h3 span{color:var(--gold);margin-right:10px;}
+  .t-item p{color:var(--ink-dim);line-height:1.8;font-size:15.5px;max-width:560px;}
+
+  /* ---------- FINAL ---------- */
+  #final{text-align:center;overflow:hidden;}
+  .final-grad{
+    position:absolute;inset:0;z-index:-1;
+    background:
+      radial-gradient(ellipse 55% 45% at 50% 30%,rgba(232,192,122,.12),transparent 65%),
+      radial-gradient(ellipse 60% 50% at 50% 90%,rgba(255,122,156,.12),transparent 65%);
+  }
+  .heartbeat{font-size:clamp(60px,10vw,110px);display:inline-block;animation:beat 1.4s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(255,122,156,.5));}
+  @keyframes beat{0%,100%{transform:scale(1);}14%{transform:scale(1.18);}28%{transform:scale(1);}42%{transform:scale(1.12);}56%{transform:scale(1);}}
+  #final h2{margin:20px 0 24px;}
+  .btn-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:46px;}
+  .btn{
+    font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:.06em;
+    padding:18px 44px;border-radius:50px;cursor:pointer;border:none;
+    transition:all .4s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;
+  }
+  .btn-forgive{
+    background:linear-gradient(100deg,var(--gold),var(--rose));color:#241019;
+    box-shadow:0 12px 40px rgba(255,122,156,.35);
+  }
+  .btn-forgive:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 20px 60px rgba(255,122,156,.5);}
+  .btn-think{
+    background:transparent;color:var(--ink-dim);border:1.5px solid rgba(245,239,230,.25);
+  }
+  .btn-think:hover{border-color:var(--ink);color:var(--ink);transform:translateY(-4px);}
+  #response{
+    margin-top:44px;font-family:var(--hand);font-size:clamp(26px,3.5vw,40px);
+    color:var(--gold);min-height:52px;opacity:0;transform:scale(.9);transition:all .6s cubic-bezier(.22,1,.36,1);
+  }
+  #response.show{opacity:1;transform:scale(1) rotate(-1deg);}
+
+  /* confetti hearts */
+  .heart{position:fixed;pointer-events:none;z-index:500;font-size:20px;will-change:transform,opacity;}
+
+  footer{
+    text-align:center;padding:40px 20px;color:var(--ink-dim);font-size:12px;
+    letter-spacing:.24em;text-transform:uppercase;border-top:1px solid rgba(245,239,230,.07);
+  }
+
+  @media (max-width:640px){
+    #dots{right:12px;}
+    section{padding:70px 7vw;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;}
+  }
+</style>
+<noscript><style>.reveal{opacity:1!important;transform:none!important}#iqFill{width:23%!important}</style></noscript>
+<script>
+window.addEventListener('load',function(){
+  if(!window.gsap){
+    document.querySelectorAll('.reveal').forEach(function(el){el.style.opacity=1;el.style.transform='none';});
+    var f=document.getElementById('iqFill'); if(f) f.style.width='23%';
+  }
+});
+</script>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="glow"></div>
+
+<nav id="dots" aria-label="Page sections">
+  <a href="#hero" data-label="Hey" class="active"></a>
+  <a href="#apology" data-label="I'm Sorry"></a>
+  <a href="#trust" data-label="Trust Me"></a>
+  <a href="#humor" data-label="The Dumb Clause"></a>
+  <a href="#promises" data-label="Promises"></a>
+  <a href="#final" data-label="One Last Thing"></a>
+</nav>
+
+<!-- 1 · HERO -->
+<section id="hero">
+  <div class="hero-grad"></div>
+  <div class="stars" id="stars"></div>
+  <div class="inner" style="text-align:center;">
+    <p class="kicker reveal" style="justify-content:center;">A website. Just for you.</p>
+    <h1 class="hero-title reveal">Hey, you.<br/>Yeah — <em>you.</em></h1>
+    <p class="lead reveal" style="margin:34px auto 0;">Before you roll your eyes at me (I know that look), just scroll down.<br/>I made you an entire website. That's how sorry I am.</p>
+  </div>
+  <div class="scroll-hint"><div class="mouse"></div>scroll slowly</div>
+</section>
+
+<!-- 2 · APOLOGY LETTER -->
+<section id="apology">
+  <div class="inner">
+    <p class="kicker reveal">Chapter One — The Apology</p>
+    <h2 class="reveal">I'm sorry.<br/><em>Truly, properly sorry.</em></h2>
+    <div class="letter reveal">
+      <p>I messed up. I know I did. And no, this isn't one of those "sorry you felt that way" fake apologies — this is a full, no-conditions, genuine <strong style="color:var(--ink);">I'm sorry</strong>.</p>
+      <p>You didn't deserve the misunderstanding. You didn't deserve the silence, or the confusion, or whatever version of me showed up that day. You deserve the version of me that laughs at your jokes before you finish them. The one that knows your coffee order. The one you call at 2 AM.</p>
+      <p>I can't rewind time, but I can do this: own it completely, learn from it, and never let my ego be louder than our friendship again.</p>
+      <p>So here it is, in writing, on the internet, forever:<br/><strong style="color:var(--ink);">It was my fault. I'm sorry. And you matter more to me than being right ever will.</strong></p>
+      <span class="sig">— your idiot best friend ♡</span>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · TRUST -->
+<section id="trust">
+  <div class="inner">
+    <p class="kicker reveal">Chapter Two — Trust Me</p>
+    <h2 class="reveal">Trust isn't given.<br/><em>So let me earn it back.</em></h2>
+    <p class="lead reveal">I know trust is fragile right now. I don't expect it back instantly. I expect to work for it — and here's exactly how:</p>
+    <div class="trust-grid">
+      <div class="trust-card reveal">
+        <span class="icon">🗣️</span>
+        <h3>I'll say it straight</h3>
+        <p>No more guessing games. If something's wrong, I'll say it. If something's great, I'll say that too. You'll never have to decode me like a cryptic Instagram story again.</p>
+      </div>
+      <div class="trust-card reveal">
+        <span class="icon">👂</span>
+        <h3>I'll listen first</h3>
+        <p>Even when I think I already know. Even when I'm dying to interrupt. Your side gets heard fully — before my side even gets a seat at the table.</p>
+      </div>
+      <div class="trust-card reveal">
+        <span class="icon">🛡️</span>
+        <h3>I've got your back</h3>
+        <p>Always. In every room, in every group chat, in every situation where you're not there to defend yourself. That's not a promise I made today — it's one I've kept since day one.</p>
+      </div>
+      <div class="trust-card reveal">
+        <span class="icon">🤝</span>
+        <h3>No repeat performances</h3>
+        <p>The same mistake, twice? Absolutely not. I've filed this one under "never again," laminated it, and hung it in my brain next to your birthday.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · HUMOR -->
+<section id="humor">
+  <div class="inner" style="text-align:center;">
+    <p class="kicker reveal" style="justify-content:center;">Chapter Three — The Fine Print</p>
+    <h2 class="reveal">In my defense,<br/><em>I am a little dumb.</em></h2>
+    <p class="lead reveal" style="margin:0 auto;">Please understand that you're dealing with a certified idiot. Evidence includes:</p>
+    <div class="chips reveal" style="justify-content:center;">
+      <span class="chip">walked into a glass door... twice</span>
+      <span class="chip">said "you too" when the waiter said enjoy your meal</span>
+      <span class="chip">loses arguments with my own alarm clock</span>
+      <span class="chip"> Googled "how to Google something"</span>
+      <span class="chip">texted "where are you" while staring at your location</span>
+      <span class="chip">apologizes via an entire website instead of just... talking</span>
+    </div>
+    <div class="iq-meter reveal" style="text-align:left;">
+      <div class="label"><span>My Intelligence Level</span><span>Technically functional</span></div>
+      <div class="bar"><div class="fill" id="iqFill"></div></div>
+      <span class="fill-note">* don't worry, my loyalty is at 100% — that one's not broken</span>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · PROMISES -->
+<section id="promises">
+  <div class="inner">
+    <p class="kicker reveal">Chapter Four — Moving Forward</p>
+    <h2 class="reveal">Here's what<br/><em>happens next.</em></h2>
+    <div class="timeline">
+      <div class="t-item reveal">
+        <h3><span>01</span>We talk it out</h3>
+        <p>Properly. Over food, probably. My treat, obviously — I'm the one in the apology website, I don't get to split the bill on this one.</p>
+      </div>
+      <div class="t-item reveal">
+        <h3><span>02</span>You roast me, mercilessly</h3>
+        <p>You've earned unlimited roasting rights for a minimum of 30 days. I will sit there and take it. I might even laugh. Okay, I'll definitely laugh — you're funny when you're mad.</p>
+      </div>
+      <div class="t-item reveal">
+        <h3><span>03</span>We rebuild, stronger</h3>
+        <p>Every friendship that survives a storm gets an upgrade. Ours just did. Misunderstanding: completed. Friendship: version 2.0, now with better communication and fewer bugs.</p>
+      </div>
+      <div class="t-item reveal">
+        <h3><span>04</span>We never speak of this... much</h3>
+        <p>Except on anniversaries. And birthdays. And whenever I need you to do me a favor. "Remember the website?" will be my most powerful argument for approximately the next decade.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · FINAL -->
+<section id="final">
+  <div class="final-grad"></div>
+  <div class="inner">
+    <span class="heartbeat reveal">❤️</span>
+    <h2 class="reveal">So... friends again?<br/><em>Best friends. The upgraded kind.</em></h2>
+    <p class="lead reveal" style="margin:0 auto;">You're not just my bestie. You're my person. The one I tell everything to. The one who makes ordinary days feel like inside jokes. Losing even a piece of that isn't worth being right — it was never even close.</p>
+    <div class="btn-row reveal">
+      <button class="btn btn-forgive" id="btnYes">Fine. Forgiven. 🙄💛</button>
+      <button class="btn btn-think" id="btnNo">Let me think about it...</button>
+    </div>
+    <div id="response"></div>
+  </div>
+</section>
+
+<footer>Made with an alarming amount of love · & one slightly broken brain · © Us</footer>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ---------- Starfield ---------- */
+const starsEl = document.getElementById('stars');
+for(let i=0;i<70;i++){
+  const s=document.createElement('div');
+  s.className='star';
+  const size=Math.random()*2.4+1;
+  s.style.width=s.style.height=size+'px';
+  s.style.left=Math.random()*100+'%';
+  s.style.top=Math.random()*100+'%';
+  s.style.setProperty('--d',(Math.random()*3+2)+'s');
+  starsEl.appendChild(s);
+}
+
+/* ---------- Reveal animations ---------- */
+gsap.utils.toArray('.reveal').forEach(el=>{
+  gsap.to(el,{
+    opacity:1,y:0,duration:1.1,ease:'power3.out',
+    scrollTrigger:{trigger:el,start:'top 92%'}
+  });
+});
+
+/* ---------- Scroll progress bar ---------- */
+const progress=document.getElementById('progress');
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  progress.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+},{passive:true});
+
+/* ---------- Active nav dot ---------- */
+const dotLinks=document.querySelectorAll('#dots a');
+const sections=document.querySelectorAll('section');
+sections.forEach((sec,i)=>{
+  ScrollTrigger.create({
+    trigger:sec,start:'top center',end:'bottom center',
+    onToggle:self=>{ if(self.isActive){
+      dotLinks.forEach(d=>d.classList.remove('active'));
+      dotLinks[i].classList.add('active');
+    }}
+  });
+});
+
+/* ---------- Cursor glow ---------- */
+const glow=document.getElementById('glow');
+window.addEventListener('pointermove',e=>{
+  gsap.to(glow,{x:e.clientX,y:e.clientY,duration:.6,ease:'power2.out'});
+},{passive:true});
+
+/* ---------- Trust card spotlight ---------- */
+document.querySelectorAll('.trust-card').forEach(card=>{
+  card.addEventListener('pointermove',e=>{
+    const r=card.getBoundingClientRect();
+    card.style.setProperty('--mx',(e.clientX-r.left)+'px');
+    card.style.setProperty('--my',(e.clientY-r.top)+'px');
+  });
+});
+
+/* ---------- IQ bar ---------- */
+gsap.to('#iqFill',{width:'23%',duration:2,ease:'power2.out',
+  scrollTrigger:{trigger:'#iqFill',start:'top 95%'}});
+
+/* ---------- Confetti hearts ---------- */
+const HEARTS=['💛','🩷','💜','✨','🌟'];
+function burstHearts(){
+  for(let i=0;i<36;i++){
+    const h=document.createElement('div');
+    h.className='heart';
+    h.textContent=HEARTS[Math.floor(Math.random()*HEARTS.length)];
+    h.style.left=50+'vw';
+    h.style.top=70+'vh';
+    document.body.appendChild(h);
+    gsap.fromTo(h,
+      {x:0,y:0,scale:Math.random()*1+0.6,opacity:1,rotation:Math.random()*360},
+      {x:(Math.random()-0.5)*window.innerWidth*1.1,
+       y:-(Math.random()*window.innerHeight*0.9+150),
+       rotation:'+='+(Math.random()*540-270),
+       opacity:0,duration:Math.random()*2.2+1.6,
+       ease:'power1.out',onComplete:()=>h.remove()});
+  }
+}
+
+/* ---------- Buttons ---------- */
+const response=document.getElementById('response');
+const btnNo=document.getElementById('btnNo');
+const btnYes=document.getElementById('btnYes');
+
+btnYes.addEventListener('click',()=>{
+  response.textContent="BEST. DECISION. EVER. (I knew the website would work. I'm a genius. A 23% genius.) ♡";
+  response.classList.add('show');
+  burstHearts();
+  if(!btnYes.dataset.done){
+    btnYes.dataset.done='1';
+    btnYes.textContent='Forever, actually 💛';
+  }
+});
+
+const teases=["Nice try. That button doesn't do anything.","Okay now you're just being dramatic 😌","The other button, bestie. THE OTHER ONE.","This is a one-option poll, you know that right?","I coded this at 2 AM. Please be nice to it.","Seriously?? I MADE YOU A WHOLE WEBSITE.","Fine. I'm giving you unlimited snacks. Click the gold one. 💛"];
+let teaseIdx=0;
+btnNo.addEventListener('click',()=>{
+  response.textContent=teases[teaseIdx%teases.length];
+  response.classList.add('show');
+  teaseIdx++;
+  gsap.fromTo(btnNo,{x:0},{x:(Math.random()-0.5)*30,duration:.15,yoyo:true,repeat:3});
+});
+</script>
+</body>
+</html>
